@@ -1,0 +1,56 @@
+{
+  "name": "@mik3fly-lab/rektradar-sdk",
+  "version": "0.1.0",
+  "description": "Official SDK for the RektRadar API - Ethereum scam & rug-pull detection (token risk scores, flags, live rug feed, webhooks).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "ethereum",
+    "scam",
+    "rug-pull",
+    "honeypot",
+    "token-security",
+    "rektradar",
+    "web3",
+    "defi",
+    "risk-score"
+  ],
+  "author": "mik3fly-lab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mik3fly-lab/rektradar-sdk.git"
+  },
+  "homepage": "https://developers.rektradar.io",
+  "bugs": {
+    "url": "https://github.com/mik3fly-lab/rektradar-sdk/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.0"
+  }
+}
