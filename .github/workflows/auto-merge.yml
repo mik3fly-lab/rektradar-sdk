@@ -1,0 +1,43 @@
+# Autonomous merge for agent-authored PRs.
+#
+# The SDK does not deploy and has no Copilot-review pipeline; here the test suite
+# IS the quality gate. When CI ("Build & Test" + the publish gate) passes on a
+# PR whose branch is agent/* or security/*, squash-merge it automatically. Any
+# other branch prefix is ignored, so human PRs still merge by hand.
+#
+# Uses the built-in GITHUB_TOKEN (main is unprotected) -> no org secrets needed.
+# Publishing stays manual: npm only releases on a pushed v* tag, never on merge.
+name: Auto-merge agent PRs
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      (startsWith(github.event.workflow_run.head_branch, 'agent/') ||
+       startsWith(github.event.workflow_run.head_branch, 'security/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Squash-merge the green PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$BRANCH" \
+                 --state open --json number,isDraft \
+                 --jq '[.[] | select(.isDraft == false)][0].number')
+          if [ -z "$PR" ]; then
+            echo "No open non-draft PR for $BRANCH — nothing to merge."
+            exit 0
+          fi
+          echo "Auto-merging PR #$PR ($BRANCH) after green CI."
+          gh pr merge "$PR" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
