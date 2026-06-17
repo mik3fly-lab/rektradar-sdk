@@ -65,4 +65,21 @@ describe("RektRadar", () => {
       (globalThis as { fetch?: unknown }).fetch = original;
     }
   });
+
+  it("binds the default global fetch (browser rejects a detached call)", async () => {
+    // Browsers throw "Illegal invocation" when window.fetch is called detached
+    // from window. Mimic that strictness and confirm the SDK binds the default.
+    const original = (globalThis as { fetch?: unknown }).fetch;
+    const strict = function (this: unknown): Promise<HttpResponse> {
+      if (this !== globalThis) throw new TypeError("Illegal invocation");
+      return Promise.resolve(mockResponse({ address: "0x1", score: 0, flags: [] }));
+    };
+    (globalThis as { fetch?: unknown }).fetch = strict;
+    try {
+      const rr = new RektRadar(); // no fetch passed -> must bind the global one
+      await expect(rr.token("0x1")).resolves.toMatchObject({ address: "0x1" });
+    } finally {
+      (globalThis as { fetch?: unknown }).fetch = original;
+    }
+  });
 });

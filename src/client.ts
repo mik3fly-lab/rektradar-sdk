@@ -39,7 +39,12 @@ export class RektRadar {
   constructor(options: RektRadarOptions = {}) {
     this.apiKey = options.apiKey;
     this.baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
-    const resolved = options.fetch ?? (globalThis as { fetch?: FetchLike }).fetch;
+    // Bind the global fetch to globalThis. In browsers, calling a detached
+    // `window.fetch` reference (which is what we store in this.fetchImpl) throws
+    // "Illegal invocation"; Node's global fetch doesn't care, but binding is
+    // safe in both. Without this, `new RektRadar()` is unusable client-side.
+    const globalFetch = (globalThis as { fetch?: FetchLike }).fetch;
+    const resolved = options.fetch ?? (globalFetch ? globalFetch.bind(globalThis) : undefined);
     if (!resolved) {
       throw new Error(
         "No fetch implementation available. Pass options.fetch (Node <18 or a non-standard runtime).",
