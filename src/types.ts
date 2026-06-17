@@ -14,7 +14,7 @@ export type FetchLike = (
 export interface RektRadarOptions {
   /** API key (rr_live_...). Omit for anonymous free access (data is delayed). */
   apiKey?: string;
-  /** Override the API origin. Default: https://app.rektradar.io */
+  /** Override the API origin. Default: https://api.rektradar.io */
   baseUrl?: string;
   /** Custom fetch (Node <18 or non-standard runtimes). Defaults to global fetch. */
   fetch?: FetchLike;

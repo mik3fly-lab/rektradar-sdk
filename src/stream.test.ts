@@ -4,13 +4,13 @@ import type { WebSocketLike } from "./stream.js";
 
 describe("streamUrl", () => {
   it("builds a wss URL with api_key + events from an https base", () => {
-    expect(streamUrl("https://app.rektradar.io", "rr_live_k", ["new_token", "rug"])).toBe(
-      "wss://app.rektradar.io/v1/stream?api_key=rr_live_k&events=new_token%2Crug",
+    expect(streamUrl("https://api.rektradar.io", "rr_live_k", ["new_token", "rug"])).toBe(
+      "wss://api.rektradar.io/v1/stream?api_key=rr_live_k&events=new_token%2Crug",
     );
   });
 
   it("omits the query when no key/events are given", () => {
-    expect(streamUrl("wss://app.rektradar.io")).toBe("wss://app.rektradar.io/v1/stream");
+    expect(streamUrl("wss://api.rektradar.io")).toBe("wss://api.rektradar.io/v1/stream");
   });
 });
 

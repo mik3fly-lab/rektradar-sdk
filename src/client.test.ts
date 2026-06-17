@@ -15,7 +15,7 @@ describe("RektRadar", () => {
     const verdict = await rr.token("0xABC");
     expect(verdict.score).toBe(80);
     const call = fetchImpl.mock.calls[0]!;
-    expect(call[0]).toBe("https://app.rektradar.io/v1/token/0xABC");
+    expect(call[0]).toBe("https://api.rektradar.io/v1/token/0xABC");
     expect(call[1]?.headers?.Authorization).toBe("Bearer rr_live_k");
   });
 
@@ -35,7 +35,7 @@ describe("RektRadar", () => {
     );
     const rr = new RektRadar({ apiKey: "rr_live_k", fetch: fetchImpl });
     await rr.rugs({ since: "7d" });
-    expect(fetchImpl.mock.calls[0]![0]).toBe("https://app.rektradar.io/v1/rugs?since=7d");
+    expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/rugs?since=7d");
   });
 
   it("throws RektRadarError carrying the upstream message on non-2xx", async () => {

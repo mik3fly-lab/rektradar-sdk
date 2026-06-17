@@ -7,7 +7,7 @@ import type {
   TokenVerdict,
 } from "./types.js";
 
-export const DEFAULT_BASE_URL = "https://app.rektradar.io";
+export const DEFAULT_BASE_URL = "https://api.rektradar.io";
 
 /** Thrown on a non-2xx API response. */
 export class RektRadarError extends Error {

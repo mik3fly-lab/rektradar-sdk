@@ -57,12 +57,17 @@ import WebSocket from "ws"; // Node only; browsers use the global WebSocket
 
 const handle = connectStream({
   apiKey: process.env.REKTRADAR_KEY,
-  events: ["new_token", "rug"],
+  events: ["new_token", "imminent_rug", "rug"],
   WebSocket,
   onMessage: (e) => console.log(e.type, e.data),
 });
 // handle.close();
 ```
+
+Stream events: `connected` (ack on open), `new_token`, `token_scored`,
+`score_update`, **`imminent_rug`** (a pending rug seen in the mempool, before it
+mines), and `rug` (liquidity pulled). Full schema (AsyncAPI 3.0):
+<https://api.rektradar.io/v1/stream-docs>.
 
 ## Webhooks
 
@@ -81,7 +86,7 @@ if (!ok) return res.sendStatus(401);
 ```ts
 new RektRadar({
   apiKey: "rr_live_...",          // optional (anonymous = free, delayed)
-  baseUrl: "https://app.rektradar.io", // optional override
+  baseUrl: "https://api.rektradar.io", // optional override
   fetch: customFetch,             // optional (Node <18 / custom runtimes)
 });
 ```
