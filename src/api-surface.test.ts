@@ -40,7 +40,7 @@ describe("public API surface", () => {
   it("exposes the documented RektRadar methods", () => {
     const rr = new RektRadar({ apiKey: "rr_test", fetch: noopFetch });
     const surface = rr as unknown as Record<string, unknown>;
-    for (const method of ["token", "tokenFull", "rugs", "recent", "topDeployers"]) {
+    for (const method of ["token", "tokenFull", "rugs", "recent", "topDeployers", "trends"]) {
       expect(typeof surface[method]).toBe("function");
     }
   });

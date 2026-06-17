@@ -10,6 +10,10 @@ export type {
   TokenFull,
   RugsResponse,
   RecentResponse,
+  TrendsOptions,
+  TrendsResponse,
+  TrendBucket,
+  TrendGranularity,
 } from "./types.js";
 export type {
   StreamOptions,

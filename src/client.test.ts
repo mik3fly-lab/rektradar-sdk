@@ -38,6 +38,26 @@ describe("RektRadar", () => {
     expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/rugs?since=7d");
   });
 
+  it("hits /v1/trends with no query when trends() has no options", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({ trends: [], granularity: "daily", period: "7d", dataDelaySeconds: 0 }),
+    );
+    const rr = new RektRadar({ fetch: fetchImpl });
+    const out = await rr.trends();
+    expect(out.granularity).toBe("daily");
+    expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/trends");
+  });
+
+  it("passes period + granularity to trends()", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({ trends: [], granularity: "hourly", period: "6h", dataDelaySeconds: 600 }),
+    );
+    const rr = new RektRadar({ apiKey: "rr_live_k", fetch: fetchImpl });
+    const out = await rr.trends({ period: "6h", granularity: "hourly" });
+    expect(out.dataDelaySeconds).toBe(600);
+    expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/trends?period=6h&granularity=hourly");
+  });
+
   it("throws RektRadarError carrying the upstream message on non-2xx", async () => {
     const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
       mockResponse({ error: "Rate limit exceeded" }, false, 429),

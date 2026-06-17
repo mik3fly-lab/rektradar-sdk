@@ -46,6 +46,14 @@ console.log(`fresh as of ${dataDelaySeconds}s ago`, rugs.length);
 | `rr.rugs({ since })` | recent rug pulls | delayed (free) / live (paid) |
 | `rr.recent()` | recent analyses feed | delayed (free) / live (paid) |
 | `rr.topDeployers(limit)` | top scam deployers | real-time |
+| `rr.trends({ period, granularity })` | scam pools / analyses over time | daily/weekly live; hourly delayed (free) / live (paid) |
+
+```ts
+// new scam pools per day over the last week
+const { trends } = await rr.trends({ period: "7d", granularity: "daily" });
+// the live hourly pulse (current hour withheld on the free tier)
+const pulse = await rr.trends({ period: "6h", granularity: "hourly" });
+```
 
 Errors throw a `RektRadarError` with a numeric `.status`.
 
