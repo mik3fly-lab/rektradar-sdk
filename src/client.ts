@@ -5,6 +5,8 @@ import type {
   RugsResponse,
   TokenFull,
   TokenVerdict,
+  TrendsOptions,
+  TrendsResponse,
 } from "./types.js";
 
 export const DEFAULT_BASE_URL = "https://api.rektradar.io";
@@ -93,6 +95,20 @@ export class RektRadar {
   /** Recent analyses feed. Delayed ~10 min on free, real-time on paid. */
   recent(): Promise<RecentResponse> {
     return this.get<RecentResponse>("/v1/recent");
+  }
+
+  /**
+   * Trends time-series: new scam pools / analyses bucketed over time.
+   * `daily`/`weekly` are historical aggregates (real-time for everyone);
+   * `hourly` is the live pulse - on a free key the current in-progress hour is
+   * withheld (dataDelaySeconds ~600), real-time on a paid key.
+   */
+  trends(options: TrendsOptions = {}): Promise<TrendsResponse> {
+    const params = new URLSearchParams();
+    if (options.period) { params.set("period", options.period); }
+    if (options.granularity) { params.set("granularity", options.granularity); }
+    const query = params.toString();
+    return this.get<TrendsResponse>(`/v1/trends${query ? `?${query}` : ""}`);
   }
 
   /** Top scam deployers (leaderboard, real-time). */

@@ -46,3 +46,33 @@ export interface RecentResponse {
   items: Array<Record<string, unknown>>;
   dataDelaySeconds: number;
 }
+
+export type TrendGranularity = "hourly" | "daily" | "weekly";
+
+export interface TrendsOptions {
+  /** Window: `6h`, `24h`, `7d`, `30d`. Defaults to `7d` server-side. */
+  period?: string;
+  /** Bucket size. Defaults from period (`6h`->hourly, `30d`->weekly, else daily). */
+  granularity?: TrendGranularity;
+}
+
+/** One time bucket of the trends series. Extra upstream fields pass through. */
+export interface TrendBucket {
+  /** Bucket key: `YYYY-MM-DD` (daily/weekly) or `YYYY-MM-DD HH:00` (hourly). */
+  date: string;
+  /** New scam pools detected in the bucket. */
+  tokensDetected: number;
+  tokensAnalyzed: number;
+  avgRiskScore: number;
+  /** Analyses scoring >= 80 (honeypots). */
+  honeypotCount: number;
+  [key: string]: unknown;
+}
+
+export interface TrendsResponse {
+  trends: TrendBucket[];
+  granularity: TrendGranularity;
+  period: string;
+  /** 0 for daily/weekly + paid hourly; ~600 for free hourly (live hour withheld). */
+  dataDelaySeconds: number;
+}
