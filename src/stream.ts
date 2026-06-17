@@ -33,7 +33,7 @@ export type WebSocketCtor = new (url: string) => WebSocketLike;
 export interface StreamOptions {
   /** API key. Omit for anonymous free access (events arrive delayed). */
   apiKey?: string;
-  /** Override the stream origin. Default: wss://app.rektradar.io */
+  /** Override the stream origin. Default: wss://api.rektradar.io */
   baseUrl?: string;
   /** Optional event-type filter, e.g. ["new_token", "rug"]. */
   events?: string[];
@@ -49,7 +49,7 @@ export interface StreamHandle {
   close(): void;
 }
 
-const DEFAULT_WS_BASE = "wss://app.rektradar.io";
+const DEFAULT_WS_BASE = "wss://api.rektradar.io";
 
 /** Build the authenticated stream URL (http/https bases are upgraded to ws/wss). */
 export function streamUrl(baseUrl: string, apiKey?: string, events?: string[]): string {
