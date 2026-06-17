@@ -1,4 +1,10 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+// Namespace import (not named) so browser bundlers don't choke. verifyWebhook
+// is server-only - a browser never receives webhooks - but the SDK's index
+// re-exports it, and a *named* `node:crypto` import makes Vite/webpack/rollup
+// fail to build ANY app that imports the SDK (they externalize node:crypto to an
+// empty module, then error on the missing named exports). A namespace import
+// only warns; the functions stay reachable in Node where verifyWebhook runs.
+import * as nodeCrypto from "node:crypto";
 
 /**
  * Verify a RektRadar webhook signature.
@@ -21,11 +27,11 @@ export function verifyWebhook(rawBody: string, signature: string, secret: string
   if (!signature || !secret) {
     return false;
   }
-  const expected = `sha256=${createHmac("sha256", secret).update(rawBody, "utf8").digest("hex")}`;
+  const expected = `sha256=${nodeCrypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex")}`;
   const provided = Buffer.from(signature);
   const computed = Buffer.from(expected);
   if (provided.length !== computed.length) {
     return false;
   }
-  return timingSafeEqual(provided, computed);
+  return nodeCrypto.timingSafeEqual(provided, computed);
 }
