@@ -12,10 +12,10 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
       - run: npm ci
       - run: npm run build
       - run: npm test
@@ -32,10 +32,10 @@ jobs:
       # workflow) is configured on npmjs.com's package settings.
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
       # Trusted Publishing needs npm >= 11.5.1; node 22 still ships npm 10.x.
       - run: npm install -g npm@latest
