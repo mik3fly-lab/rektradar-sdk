@@ -1,6 +1,6 @@
 {
   "name": "@mik3fly-lab/rektradar-sdk",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Official SDK for the RektRadar API - Ethereum scam & rug-pull detection (token risk scores, flags, live rug feed, webhooks).",
   "type": "module",
   "main": "./dist/index.js",
@@ -24,13 +24,20 @@
   "keywords": [
     "ethereum",
     "scam",
+    "scam-detection",
     "rug-pull",
+    "rug-pull-detection",
     "honeypot",
+    "honeypot-detector",
     "token-security",
+    "token-risk",
+    "risk-score",
+    "mempool",
+    "web3-security",
+    "crypto-security",
     "rektradar",
     "web3",
-    "defi",
-    "risk-score"
+    "defi"
   ],
   "author": "mik3fly-lab",
   "license": "MIT",
