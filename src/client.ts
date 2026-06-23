@@ -11,6 +11,13 @@ import type {
 
 export const DEFAULT_BASE_URL = "https://api.rektradar.io";
 
+// SDK version, sent as a User-Agent so API usage from the SDK is attributable
+// in server logs (vs raw curl / browser fetch). Keep in sync with package.json
+// on each release. In browsers `User-Agent` is a forbidden header and is
+// silently dropped (no error); it takes effect in Node/undici, which is where
+// real server-side integrations live.
+const SDK_VERSION = "0.1.6";
+
 /** Thrown on a non-2xx API response. */
 export class RektRadarError extends Error {
   readonly status: number;
@@ -56,7 +63,10 @@ export class RektRadar {
   }
 
   private async get<T>(path: string): Promise<T> {
-    const headers: Record<string, string> = { Accept: "application/json" };
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+      "User-Agent": `rektradar-sdk/${SDK_VERSION}`,
+    };
     if (this.apiKey) {
       headers.Authorization = `Bearer ${this.apiKey}`;
     }
