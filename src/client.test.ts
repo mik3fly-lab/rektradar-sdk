@@ -29,6 +29,16 @@ describe("RektRadar", () => {
     expect(fetchImpl.mock.calls[0]![1]?.headers?.Authorization).toBeUndefined();
   });
 
+  it("sends a rektradar-sdk User-Agent for server-log attribution", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({ address: "0xABC", score: 1, flags: [] }),
+    );
+    const rr = new RektRadar({ fetch: fetchImpl });
+    await rr.token("0xABC");
+    const ua = fetchImpl.mock.calls[0]![1]?.headers?.["User-Agent"];
+    expect(ua).toMatch(/^rektradar-sdk\/\d/);
+  });
+
   it("passes the since param to rugs()", async () => {
     const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
       mockResponse({ rugs: [], summary: null, dataDelaySeconds: 0 }),
