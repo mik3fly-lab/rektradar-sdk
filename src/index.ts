@@ -14,6 +14,7 @@ export type {
   TrendsResponse,
   TrendBucket,
   TrendGranularity,
+  StatsResponse,
 } from "./types.js";
 export type {
   StreamOptions,

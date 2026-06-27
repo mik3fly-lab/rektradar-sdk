@@ -76,3 +76,21 @@ export interface TrendsResponse {
   /** 0 for daily/weekly + paid hourly; ~600 for free hourly (live hour withheld). */
   dataDelaySeconds: number;
 }
+
+/** Platform-wide aggregate counters. Real-time for every tier. Extra upstream fields pass through. */
+export interface StatsResponse {
+  /** Tokens analysed to completion. */
+  tokensScanned: number;
+  /** Analyses scoring >= 70. */
+  scamsDetected: number;
+  poolsMonitored: number;
+  mempoolTxs: number;
+  deployersMapped: number;
+  scamDeployers: number;
+  networkEdges: number;
+  /** Analyses completed in the last 24h. */
+  analyzed24h: number;
+  /** ISO timestamp the snapshot was computed. */
+  ts: string;
+  [key: string]: unknown;
+}

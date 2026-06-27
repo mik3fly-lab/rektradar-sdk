@@ -68,6 +68,17 @@ describe("RektRadar", () => {
     expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/trends?period=6h&granularity=hourly");
   });
 
+  it("hits /v1/stats and returns the platform counters", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({ tokensScanned: 1000, scamsDetected: 400, deployersMapped: 300, ts: "2026-06-27T00:00:00.000Z" }),
+    );
+    const rr = new RektRadar({ fetch: fetchImpl });
+    const out = await rr.stats();
+    expect(out.tokensScanned).toBe(1000);
+    expect(out.scamsDetected).toBe(400);
+    expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/stats");
+  });
+
   it("throws RektRadarError carrying the upstream message on non-2xx", async () => {
     const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
       mockResponse({ error: "Rate limit exceeded" }, false, 429),

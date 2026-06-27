@@ -71,6 +71,7 @@ Real-time API access is included from the **Basic** plan up — see
 | `rr.recent()` | recent analyses feed | delayed (free) / live (paid) |
 | `rr.topDeployers(limit)` | top scam deployers | real-time |
 | `rr.trends({ period, granularity })` | scam pools / analyses over time | daily/weekly live; hourly delayed (free) / live (paid) |
+| `rr.stats()` | platform-wide counters (tokens scanned, scams, deployers) | real-time |
 
 ```ts
 // new scam pools per day over the last week
