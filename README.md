@@ -66,7 +66,7 @@ Real-time API access is included from the **Basic** plan up — see
 | Method | Returns | Freshness |
 |---|---|---|
 | `rr.token(address)` | risk score + flags | real-time |
-| `rr.tokenFull(address)` | verdict + liquidity + holders | real-time |
+| `rr.tokenFull(address)` | verdict + liquidity + holders + swap signals (`swaps`) | real-time |
 | `rr.rugs({ since })` | recent rug pulls | delayed (free) / live (paid) |
 | `rr.recent()` | recent analyses feed | delayed (free) / live (paid) |
 | `rr.topDeployers(limit)` | top scam deployers | real-time |
