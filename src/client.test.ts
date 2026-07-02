@@ -79,6 +79,31 @@ describe("RektRadar", () => {
     expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/stats");
   });
 
+  it("hits /v1/token/:address/full and surfaces the swap signals", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({
+        score: { address: "0xABC", score: 80, flags: [] },
+        liquidity: {},
+        holders: {},
+        swaps: { traders: 169, buys: 11794, sells: 3958, buyVolWeth: 29.33, sellVolWeth: 29.74, netLiquidityWeth: -12.91, quote: "WETH" },
+      }),
+    );
+    const rr = new RektRadar({ apiKey: "rr_live_k", fetch: fetchImpl });
+    const full = await rr.tokenFull("0xABC");
+    expect(fetchImpl.mock.calls[0]![0]).toBe("https://api.rektradar.io/v1/token/0xABC/full");
+    expect(full.swaps?.traders).toBe(169);
+    expect(full.swaps?.netLiquidityWeth).toBe(-12.91);
+  });
+
+  it("tolerates swaps=null on token/full (base/quote tokens)", async () => {
+    const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
+      mockResponse({ score: {}, liquidity: {}, holders: {}, swaps: null }),
+    );
+    const rr = new RektRadar({ fetch: fetchImpl });
+    const full = await rr.tokenFull("0xweth");
+    expect(full.swaps).toBeNull();
+  });
+
   it("throws RektRadarError carrying the upstream message on non-2xx", async () => {
     const fetchImpl = vi.fn<FetchLike>().mockResolvedValue(
       mockResponse({ error: "Rate limit exceeded" }, false, 429),

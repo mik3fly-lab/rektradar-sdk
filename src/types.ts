@@ -28,11 +28,29 @@ export interface TokenVerdict {
   [key: string]: unknown;
 }
 
-/** Deep token view: verdict + liquidity + holders. */
+/** On-chain trading signals for a token, from swap/mint/burn events. */
+export interface SwapEnrichment {
+  /** Distinct swap senders. */
+  traders: number;
+  buys: number;
+  sells: number;
+  /** Buy volume on the WETH side of the pair. */
+  buyVolWeth: number;
+  /** Sell volume on the WETH side of the pair. */
+  sellVolWeth: number;
+  /** Net liquidity in WETH (mint - burn); negative means liquidity was drained. */
+  netLiquidityWeth: number;
+  /** Quote token the volumes are denominated in (currently always `"WETH"`). */
+  quote: string;
+}
+
+/** Deep token view: verdict + liquidity + holders + on-chain swap signals. */
 export interface TokenFull {
   score: unknown;
   liquidity: unknown;
   holders: unknown;
+  /** On-chain swap signals. `null` for base/quote tokens (WETH, USDC, ...). */
+  swaps?: SwapEnrichment | null;
 }
 
 export interface RugsResponse {

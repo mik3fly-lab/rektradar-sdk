@@ -8,6 +8,7 @@ export type {
   HttpResponse,
   TokenVerdict,
   TokenFull,
+  SwapEnrichment,
   RugsResponse,
   RecentResponse,
   TrendsOptions,
