@@ -17,7 +17,7 @@ export const DEFAULT_BASE_URL = "https://api.rektradar.io";
 // on each release. In browsers `User-Agent` is a forbidden header and is
 // silently dropped (no error); it takes effect in Node/undici, which is where
 // real server-side integrations live.
-const SDK_VERSION = "0.1.8";
+const SDK_VERSION = "0.1.9";
 
 /** Thrown on a non-2xx API response. */
 export class RektRadarError extends Error {

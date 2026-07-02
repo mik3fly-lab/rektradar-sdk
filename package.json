@@ -1,6 +1,6 @@
 {
   "name": "@mik3fly-lab/rektradar-sdk",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Official SDK for the RektRadar API - Ethereum scam & rug-pull detection (token risk scores, flags, live rug feed, webhooks).",
   "type": "module",
   "main": "./dist/index.js",
