@@ -7,7 +7,7 @@ import {
   streamUrl,
   verifyWebhook,
 } from "./index.js";
-import type { FetchLike } from "./types.js";
+import type { FetchLike, RecentItem, RecentResponse } from "./types.js";
 
 // The README, the rektradar.io/developers page and the dev.to article all
 // reference this surface by hand. When a public name is renamed or removed,
@@ -79,5 +79,58 @@ describe("public API surface", () => {
     });
     expect(openedUrl.startsWith("wss://api.rektradar.io")).toBe(true);
     expect(openedUrl).not.toContain("app.rektradar.io");
+  });
+});
+
+// GET /v1/recent: the server half is rektradar-app tests/contracts/v1-contracts.test.ts.
+describe("recent() contract", () => {
+  // A /v1/recent body as served since the feed is ordered by discovery.
+  const body: RecentResponse = {
+    items: [
+      {
+        address: "0x1111111111111111111111111111111111111111",
+        symbol: "NEW",
+        riskScore: 70,
+        // Discovered 30 min ago, re-analysed a minute ago: still a 30-min-old token.
+        createdAt: "2026-10-04T15:30:00.000Z",
+        analyzedAt: "2026-10-04T15:59:00.000Z",
+      },
+      {
+        address: "0x2222222222222222222222222222222222222222",
+        symbol: "OLDER",
+        riskScore: 10,
+        createdAt: "2026-10-04T15:20:00.000Z",
+        analyzedAt: "2026-10-04T15:20:02.000Z",
+      },
+    ],
+    dataDelaySeconds: 600,
+  };
+  const fetchBody: FetchLike = async () => ({
+    ok: true,
+    status: 200,
+    json: async () => body,
+    headers: { get: () => null },
+  });
+
+  it("returns { items, dataDelaySeconds } with createdAt (discovery) and analyzedAt (last analysis) on every item", async () => {
+    const out = await new RektRadar({ fetch: fetchBody }).recent();
+    expect(Object.keys(out).sort()).toEqual(["dataDelaySeconds", "items"]);
+    for (const item of out.items) {
+      // Typed reads: RecentItem declares these (an index-signature field would be `unknown`).
+      const address: string = item.address;
+      const createdAt: string | null | undefined = item.createdAt;
+      const analyzedAt: string | null = item.analyzedAt;
+      expect(address).toMatch(/^0x[0-9a-f]{40}$/);
+      expect(Number.isFinite(Date.parse(createdAt ?? ""))).toBe(true);
+      expect(Number.isFinite(Date.parse(analyzedAt ?? ""))).toBe(true);
+    }
+  });
+
+  it("items come newest createdAt first; analyzedAt is not the order", async () => {
+    const { items } = await new RektRadar({ fetch: fetchBody }).recent();
+    const created = items.map((i: RecentItem) => Date.parse(i.createdAt ?? ""));
+    expect(created).toEqual([...created].sort((a, b) => b - a));
+    // The re-analysed first row has the newer analyzedAt but is not ahead because of it.
+    expect(Date.parse(items[0]!.analyzedAt ?? "")).toBeGreaterThan(Date.parse(items[0]!.createdAt ?? ""));
   });
 });
