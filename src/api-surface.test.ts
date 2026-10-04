@@ -7,7 +7,7 @@ import {
   streamUrl,
   verifyWebhook,
 } from "./index.js";
-import type { FetchLike, RecentItem, RecentResponse } from "./types.js";
+import type { FetchLike, RecentItem, RecentResponse, StatsResponse, TrendsResponse } from "./types.js";
 
 // The README, the rektradar.io/developers page and the dev.to article all
 // reference this surface by hand. When a public name is renamed or removed,
@@ -132,5 +132,50 @@ describe("recent() contract", () => {
     expect(created).toEqual([...created].sort((a, b) => b - a));
     // The re-analysed first row has the newer analyzedAt but is not ahead because of it.
     expect(Date.parse(items[0]!.analyzedAt ?? "")).toBeGreaterThan(Date.parse(items[0]!.createdAt ?? ""));
+  });
+});
+
+// GET /v1/trends + /v1/stats: the server half is rektradar-app
+// tests/contracts/v1-contracts.test.ts. Same shape since 2026-10-04, new
+// meaning: the token counters count DISCOVERED tokens, never re-analyses.
+describe("trends() / stats() contract", () => {
+  const respond = (payload: unknown): FetchLike => async () => ({
+    ok: true,
+    status: 200,
+    json: async () => payload,
+    headers: { get: () => null },
+  });
+
+  it("trends() returns { trends, granularity, period, dataDelaySeconds } with typed bucket counters", async () => {
+    const body: TrendsResponse = {
+      // 2026-10-04: 503 tokens discovered that day, whatever was re-analysed.
+      trends: [{ date: "2026-10-04", tokensDetected: 696, tokensAnalyzed: 503, avgRiskScore: 51, honeypotCount: 51 }],
+      granularity: "daily",
+      period: "7d",
+      dataDelaySeconds: 0,
+    };
+    const out = await new RektRadar({ fetch: respond(body) }).trends({ period: "7d" });
+    expect(Object.keys(out).sort()).toEqual(["dataDelaySeconds", "granularity", "period", "trends"]);
+    for (const bucket of out.trends) {
+      const counters: number[] = [bucket.tokensDetected, bucket.tokensAnalyzed, bucket.avgRiskScore, bucket.honeypotCount];
+      for (const n of counters) { expect(typeof n).toBe("number"); }
+    }
+  });
+
+  it("stats() exposes analyzed24h (tokens discovered in the last 24h) as a number", async () => {
+    const body: StatsResponse = {
+      tokensScanned: 136181,
+      scamsDetected: 84084,
+      poolsMonitored: 149368,
+      mempoolTxs: 2593994,
+      deployersMapped: 54536,
+      scamDeployers: 20940,
+      networkEdges: 15756091,
+      analyzed24h: 653,
+      ts: "2026-10-04T18:00:00.000Z",
+    };
+    const out = await new RektRadar({ fetch: respond(body) }).stats();
+    const analyzed24h: number = out.analyzed24h;
+    expect(analyzed24h).toBe(653);
   });
 });

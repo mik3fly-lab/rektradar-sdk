@@ -94,15 +94,24 @@ export interface TrendsOptions {
   granularity?: TrendGranularity;
 }
 
-/** One time bucket of the trends series. Extra upstream fields pass through. */
+/**
+ * One time bucket of the trends series. Extra upstream fields pass through.
+ *
+ * The token series (`tokensAnalyzed`, `avgRiskScore`, `honeypotCount`) count
+ * each token once, in the bucket of its discovery (first analysis), with its
+ * current score. A re-analysis of an older token never counts again, so a mass
+ * re-scan does not inflate today's bucket.
+ */
 export interface TrendBucket {
   /** Bucket key: `YYYY-MM-DD` (daily/weekly) or `YYYY-MM-DD HH:00` (hourly). */
   date: string;
   /** New scam pools detected in the bucket. */
   tokensDetected: number;
+  /** Tokens discovered in the bucket (first analysis) and analysed. Re-analyses are not counted. */
   tokensAnalyzed: number;
+  /** Current mean risk score of the tokens discovered in the bucket. */
   avgRiskScore: number;
-  /** Analyses scoring >= 80 (honeypots). */
+  /** Tokens discovered in the bucket whose current score is >= 80 (honeypots). */
   honeypotCount: number;
   [key: string]: unknown;
 }
@@ -126,7 +135,7 @@ export interface StatsResponse {
   deployersMapped: number;
   scamDeployers: number;
   networkEdges: number;
-  /** Analyses completed in the last 24h. */
+  /** Tokens discovered (first analysis completed) in the last 24h. Re-analyses of older tokens are not counted. */
   analyzed24h: number;
   /** ISO timestamp the snapshot was computed. */
   ts: string;

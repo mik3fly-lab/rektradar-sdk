@@ -114,7 +114,10 @@ export class RektRadar {
   }
 
   /**
-   * Trends time-series: new scam pools / analyses bucketed over time.
+   * Trends time-series: new pools and newly discovered tokens bucketed over time.
+   * The token series (`tokensAnalyzed`, `avgRiskScore`, `honeypotCount`) count
+   * each token once, on its discovery date (first analysis), with its current
+   * score: a re-analysis of an older token never counts again.
    * `daily`/`weekly` are historical aggregates (real-time for everyone);
    * `hourly` is the live pulse - on a free key the current in-progress hour is
    * withheld (dataDelaySeconds ~600), real-time on a paid key.
@@ -132,7 +135,10 @@ export class RektRadar {
     return this.get(`/v1/deployers/top?limit=${encodeURIComponent(String(limit))}`);
   }
 
-  /** Platform-wide aggregate counters (tokens scanned, scams, deployers). Real-time for all tiers. */
+  /**
+   * Platform-wide aggregate counters (tokens scanned, scams, deployers). Real-time for all tiers.
+   * `analyzed24h` counts the tokens discovered (first analysis) in the last 24h, not re-analyses.
+   */
   stats(): Promise<StatsResponse> {
     return this.get<StatsResponse>("/v1/stats");
   }
