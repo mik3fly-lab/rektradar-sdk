@@ -70,8 +70,8 @@ Real-time API access is included from the **Basic** plan up — see
 | `rr.rugs({ since })` | recent rug pulls | delayed (free) / live (paid) |
 | `rr.recent()` | newly discovered tokens, newest `createdAt` first | delayed (free) / live (paid) |
 | `rr.topDeployers(limit)` | top scam deployers | real-time |
-| `rr.trends({ period, granularity })` | scam pools / analyses over time | daily/weekly live; hourly delayed (free) / live (paid) |
-| `rr.stats()` | platform-wide counters (tokens scanned, scams, deployers) | real-time |
+| `rr.trends({ period, granularity })` | new pools / newly discovered tokens over time | daily/weekly live; hourly delayed (free) / live (paid) |
+| `rr.stats()` | platform-wide counters (tokens scanned, scams, deployers, tokens discovered in 24h) | real-time |
 
 ```ts
 // new scam pools per day over the last week
@@ -79,6 +79,12 @@ const { trends } = await rr.trends({ period: "7d", granularity: "daily" });
 // the live hourly pulse (current hour withheld on the free tier)
 const pulse = await rr.trends({ period: "6h", granularity: "hourly" });
 ```
+
+The token series of `rr.trends()` (`tokensAnalyzed`, `avgRiskScore`,
+`honeypotCount`) count each token once, in the bucket of its discovery (its first
+analysis), with its current score. `rr.stats().analyzed24h` likewise counts the
+tokens discovered in the last 24h. A re-analysis of an older token never counts
+again, so a mass re-scan does not inflate today's numbers.
 
 `rr.recent()` is ordered by discovery (`createdAt`, the token's first analysis),
 not by last analysis (`analyzedAt`): a re-analysis refreshes a row's verdict but
