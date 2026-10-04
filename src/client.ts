@@ -103,7 +103,12 @@ export class RektRadar {
     return this.get<RugsResponse>(`/v1/rugs${query}`);
   }
 
-  /** Recent analyses feed. Delayed ~10 min on free, real-time on paid. */
+  /**
+   * Newly discovered tokens, newest discovery (`createdAt`) first, with their
+   * current verdict. A re-analysis updates a row's verdict and `analyzedAt` but
+   * never brings an old token back to the top. Delayed ~10 min on free (on the
+   * discovery date, so `analyzedAt` can be more recent), real-time on paid.
+   */
   recent(): Promise<RecentResponse> {
     return this.get<RecentResponse>("/v1/recent");
   }

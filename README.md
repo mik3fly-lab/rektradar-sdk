@@ -68,7 +68,7 @@ Real-time API access is included from the **Basic** plan up — see
 | `rr.token(address)` | risk score + flags | real-time |
 | `rr.tokenFull(address)` | verdict + liquidity + holders + swap signals (`swaps`) | real-time |
 | `rr.rugs({ since })` | recent rug pulls | delayed (free) / live (paid) |
-| `rr.recent()` | recent analyses feed | delayed (free) / live (paid) |
+| `rr.recent()` | newly discovered tokens, newest `createdAt` first | delayed (free) / live (paid) |
 | `rr.topDeployers(limit)` | top scam deployers | real-time |
 | `rr.trends({ period, granularity })` | scam pools / analyses over time | daily/weekly live; hourly delayed (free) / live (paid) |
 | `rr.stats()` | platform-wide counters (tokens scanned, scams, deployers) | real-time |
@@ -79,6 +79,11 @@ const { trends } = await rr.trends({ period: "7d", granularity: "daily" });
 // the live hourly pulse (current hour withheld on the free tier)
 const pulse = await rr.trends({ period: "6h", granularity: "hourly" });
 ```
+
+`rr.recent()` is ordered by discovery (`createdAt`, the token's first analysis),
+not by last analysis (`analyzedAt`): a re-analysis refreshes a row's verdict but
+never brings an old token back to the top. On a free key the delay applies to the
+discovery, so a row's `analyzedAt` can be more recent than 10 min.
 
 Errors throw a `RektRadarError` with a numeric `.status`.
 

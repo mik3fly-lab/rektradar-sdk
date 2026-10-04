@@ -60,8 +60,28 @@ export interface RugsResponse {
   dataDelaySeconds: number;
 }
 
+/**
+ * One row of `rr.recent()`: a newly discovered token with its current verdict.
+ * Extra upstream fields (name, symbol, riskScore, riskFlags, status) pass through.
+ */
+export interface RecentItem {
+  address: string;
+  /**
+   * Discovery: when RektRadar first analysed the token (ISO 8601). The feed is
+   * ordered by it, newest first, and the free-key delay applies to it. A
+   * re-analysis never moves it. Absent only while the API falls back on its
+   * legacy last-analysis feed.
+   */
+  createdAt?: string | null;
+  /** Last (re-)analysis (ISO 8601). Moves on every re-analysis, so it is not the feed order. */
+  analyzedAt: string | null;
+  [key: string]: unknown;
+}
+
 export interface RecentResponse {
-  items: Array<Record<string, unknown>>;
+  /** Newly discovered tokens, newest `createdAt` first (up to 50). */
+  items: RecentItem[];
+  /** 0 for a paid (real-time) key, ~600 for a free (delayed) key. */
   dataDelaySeconds: number;
 }
 

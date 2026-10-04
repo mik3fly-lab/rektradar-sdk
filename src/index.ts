@@ -11,6 +11,7 @@ export type {
   SwapEnrichment,
   RugsResponse,
   RecentResponse,
+  RecentItem,
   TrendsOptions,
   TrendsResponse,
   TrendBucket,
